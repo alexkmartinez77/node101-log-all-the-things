@@ -1,34 +1,34 @@
 const express = require('express');
 const morgan = require('morgan');
 const fs = require('fs');
-var path = require('path');
+const path = require('path');
+const csvToJson = require('convert-csv-to-json');
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.csv'), { flags: 'a' });
 
 const app = express();
 
+app.set('json spaces', 2);
 
-//removes commas from 'user-agent' header
+//morgan setup
 morgan.token('custom-user-agent', (req) => {
-  let customUserserAgent =(req.headers['user-agent'].replace(/,/g, ''));
+  let customUserserAgent =(req.headers['user-agent'].replace(/;/g, ''));
   return customUserserAgent;
 })
-
-morgan.token('custom', ':custom-user-agent,:date[iso],:method,:url,HTTP/:http-version,:status');
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.csv'), { flags: 'a' })
+morgan.token('custom', ':custom-user-agent;:date[iso];:method;:url;HTTP/:http-version;:status');
 app.use(morgan('custom'));
 app.use(morgan('custom', { stream: accessLogStream }));
 
 app.get('/', (req, res) => {
-// write your code to respond "ok" here
-  res.status(200).send("ok");
+
+  res.sendStatus(200).send("ok");
 
 });
 
 app.get('/logs', (req, res) => {
-// write your code to return a json object containing the log data here
-  res.json()
+
+  let jsonLog = csvToJson.getJsonFromCsv('./server/log.csv');
+  res.json(jsonLog);
+
 });
-
-
-
 
 module.exports = app;
