@@ -19,14 +19,16 @@ app.use(morgan('custom'));
 app.use(morgan('custom', { stream: accessLogStream }));
 
 app.get('/', (req, res) => {
-
-  res.sendStatus(200).send("ok");
+  let jsonLog = csvToJson.getJsonFromCsv('./server/log.csv');
+  console.log('line 23', jsonLog[0].tostring());
+  res.send("ok");
 
 });
 
 app.get('/logs', (req, res) => {
 
   let jsonLog = csvToJson.getJsonFromCsv('./server/log.csv');
+  console.log(jsonLog.toString());
   res.json(jsonLog);
 
 });
