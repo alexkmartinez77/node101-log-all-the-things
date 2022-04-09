@@ -19,8 +19,12 @@ app.use(morgan('custom'));
 app.use(morgan('custom', { stream: accessLogStream }));
 
 app.get('/', (req, res) => {
-  let jsonLog = csvToJson.getJsonFromCsv('./server/log.csv');
-  console.log('line 23', jsonLog[0].tostring());
+  console.log('req.header', req.header);
+  console.log(`${req.header('user-agent').replace(/;/g, '')};
+               ${new Date().toISOString};
+               ${req.method};
+               ${req.originalUrl};
+  `)
   res.send("ok");
 
 });
