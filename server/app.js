@@ -10,21 +10,21 @@ const app = express();
 app.set('json spaces', 2);
 
 //morgan setup
-morgan.token('custom-user-agent', (req) => {
-  let customUserserAgent =(req.headers['user-agent'].replace(/;/g, ''));
-  return customUserserAgent;
-})
-morgan.token('custom', ':custom-user-agent;:date[iso];:method;:url;HTTP/:http-version;:status');
-app.use(morgan('custom'));
-app.use(morgan('custom', { stream: accessLogStream }));
+//morgan.token('custom-user-agent', (req) => {
+//  let customUserserAgent =(req.headers['user-agent'].replace(/;/g, ''));
+//  return customUserserAgent;
+//})
+//morgan.token('custom', ':custom-user-agent;:date[iso];:method;:url;HTTP/:http-version;:status');
+////app.use(morgan('custom'));
+//app.use(morgan('custom', { stream: accessLogStream }));
 
 app.get('/', (req, res) => {
-  console.log('req.header', req.header);
-  console.log(`${req.header('user-agent').replace(/;/g, '')};
-               ${new Date().toISOString};
-               ${req.method};
-               ${req.originalUrl};
-  `)
+
+  let log = (`${req.header('user-agent').replace(/;/g, '')};${new Date().toISOString};${req.method};${req.originalUrl};HTTP:/${req.httpVersion};${res.statusCode}`)
+
+  fs.appendFile('./server/log.csv', `\n${log}`, 
+    (err) => err ? console.log(err) : console.log('Successful log!')
+  )
   res.send("ok");
 
 });
