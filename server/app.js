@@ -6,14 +6,14 @@ const app = express();
 
 app.set('json spaces', 2);
 
-app.get('/', (req, res) => {
-  //create log string
-  let log = (`${req.header('user-agent').replace(/;/g, '')};${new Date().toISOString()};${req.method};${req.originalUrl};HTTP/${req.httpVersion};${res.statusCode}`)
-  //to pass the tests
+app.use((req, res, next) => {
+  let log = (`${req.header('user-agent').replace(/;/g, '')};${new Date().toISOString()};${req.method};${req.originalUrl};HTTP/${req.httpVersion};${res.statusCode}`);
+  fs.appendFile('./server/log.csv', `\n${log}`, (err) => err ? console.log(err) : console.log('Successful log!'));
   console.log(log);
-  //append log to log.csv file
-  fs.appendFile('./server/log.csv', `\n${log}`, (err) => err ? console.log(err) : console.log('Successful log!'))
-  //response to root route
+  next();
+})
+
+app.get('/', (req, res) => {
   res.send("ok");
 });
 
